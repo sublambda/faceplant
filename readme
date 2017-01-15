@@ -1,0 +1,10 @@
+
+rcvface <facehost> [<proxy>]
+  facehost: name/addr of face detector
+  proxy: proxy addr [optional]
+
+face [<dev>]
+  dev: video device number [0-3]; default 0
+
+
+  
