@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
   sprintf(buf, "tcp://*:555%d", dev);
   RC(zmq_bind(pub, buf));
 
-  RC(zmq_connect(pub, "tcp://PROXYHOST/68:7770"));
+  RC(zmq_connect(pub, "tcp://PROXYHOST:7770"));
 
   RC(bodyclass.load("haarcascade_upperbody.xml"));
   RC(faceclass.load("haarcascade_frontalface_alt.xml"));

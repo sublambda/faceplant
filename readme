@@ -7,4 +7,6 @@ face [<dev>]
   dev: video device number [0-3]; default 0
 
 
-  
+if using a relay, in face.cpp, PROXYHOST should be replaced with the address of the relay host in this line (near beginning of main):
+
+  RC(zmq_connect(pub, "tcp://PROXYHOST:7770"));
