@@ -3,10 +3,8 @@ rcvface <facehost> [<proxy>]
   facehost: name/addr of face detector
   proxy: proxy addr [optional]
 
-face [<dev>]
+face [<dev>] [<relay>]
   dev: video device number [0-3]; default 0
+  relay: optional relay host
 
-
-if using a relay, in face.cpp, PROXYHOST should be replaced with the address of the relay host in this line (near beginning of main):
-
-  RC(zmq_connect(pub, "tcp://PROXYHOST:7770"));
+alternatively, face can get relay address from FACERELAY environmenet variable
