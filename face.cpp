@@ -104,7 +104,12 @@ int main(int argc, char* argv[])
   sprintf(buf, "tcp://*:555%d", dev);
   RC(zmq_bind(pub, buf));
 
-  RC(zmq_connect(pub, "tcp://PROXYHOST:7770"));
+  const char* relayhost = argc > 2 ? argv[2] : getenv("FACERELAY");
+  if (relayhost != NULL) {
+    sprintf(buf, "tcp://%s:7770", relayhost);
+    fprintf(stderr, "relay %s\n", buf);
+    RC(zmq_connect(pub, buf));
+  }
 
   RC(bodyclass.load("haarcascade_upperbody.xml"));
   RC(faceclass.load("haarcascade_frontalface_alt.xml"));
