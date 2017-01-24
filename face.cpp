@@ -6,6 +6,10 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/video/video.hpp>
 #include <opencv2/objdetect.hpp>
+#if PICAM
+#include <raspicam/raspicam_cv.h>
+#endif
+#include "defs.h"
 
 using namespace cv;
 
@@ -26,15 +30,6 @@ long millis() {
   gettimeofday(&tv,0);
   return (long) (tv.tv_sec * 1000) + (long) (tv.tv_usec / 1000);
 }       
-
-void checkrc(const char* s, int rc) {
-  if (1 || rc != 0) {
-    fprintf(stderr,"RC %s => %s\n", s, rc ? "T" : "F");
-    fflush(stderr);
-  }
-}
-
-#define RC(x) checkrc(#x,x)
 
 CascadeClassifier faceclass, bodyclass;
 
@@ -62,15 +57,6 @@ void detect(CascadeClassifier cc, Mat im, int min_neighbors = 2) {
   else
     return;
 
-  /*
-  long t = millis();
-
-  // return 
-  if (t - ts < 100)
-    return;
-  ts = t;
-  */
-
   for (int i = 0; i < faces.size(); i++) {
     Rect r = faces[i];
     Rect fr(r.x * f, r.y * f, r.width * f, r.height * f);
@@ -93,7 +79,11 @@ void detect(CascadeClassifier cc, Mat im, int min_neighbors = 2) {
 int main(int argc, char* argv[])
 {
   Mat im; 
+#if PICAM
+  raspicam::RaspiCam_Cv vc;
+#else
   VideoCapture vc;
+#endif
   int dev = argc > 1 ? atoi(argv[1]) : 0;
 
   void* ctx = zmq_ctx_new();
@@ -114,9 +104,12 @@ int main(int argc, char* argv[])
   RC(bodyclass.load("haarcascade_upperbody.xml"));
   RC(faceclass.load("haarcascade_frontalface_alt.xml"));
 
+#if PICAM
+  RC(vc.open());
+#else
   RC(vc.open(dev));
+#endif
 
-  //RC(vc.set(CAP_PROP_FOURCC,CV_FOURCC('M','J','P','G')));
   //RC(vc.set(CAP_PROP_FOURCC,CV_FOURCC('H','2','6','4')));
 
   RC(vc.set(CAP_PROP_FPS , 10.0));
@@ -135,14 +128,8 @@ int main(int argc, char* argv[])
       continue;
     ts = t;
 
-    vc.read(im);
-
-    if (0) {
-      Mat im2;
-      resize(im, im2, Size(), .25, .25);
-      imshow("orig", im2);
-      cv::waitKey(33);
-    }
+    vc.grab();
+    vc.retrieve(im);
 
     // last argument, min_neighbors, controls threshold of detector
     // values 0-4, higher is stricter

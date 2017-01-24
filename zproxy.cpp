@@ -37,19 +37,19 @@ void* capture(void* cx) {
 
     key[n = zmq_recv(cs, key, sizeof key, 0)] = 0;
     if (n < 0) {
-      printf("fuck");
+      fprintf(stderr, "recv %d", n);
       continue;
     }
     zmq_getsockopt(cs, ZMQ_RCVMORE, &more, &ms);
     if (more) {
       unsigned char body[1000000];
       body[n = zmq_recv(cs, body, sizeof body, 0)] = 0;
-      if (n < 0) printf("fuck");
+      if (n < 0) 
+        fprintf(stderr, "recv %d", n);
     }
     else {
-      printf("%s : \"%s\"\n", timestring(), key);
+      fprintf(stderr, "%s : \"%s\"\n", timestring(), key);
     }
-    fflush(stdout);
   }
 }
 
@@ -64,16 +64,6 @@ int main(int argc, char* argv[])
     *xpub = zmq_socket(cx, ZMQ_XPUB),
     *reps = zmq_socket(cx, ZMQ_REP),
     *caps = zmq_socket(cx, ZMQ_PAIR);
-
-#if 0
-  int val = 0;
-  zmq_setsockopt(xpub, ZMQ_SNDHWM, &val, sizeof val);
-  zmq_setsockopt(xpub, ZMQ_RCVHWM, &val, sizeof val);
-  zmq_setsockopt(xsub, ZMQ_SNDHWM, &val, sizeof val);
-  zmq_setsockopt(xsub, ZMQ_RCVHWM, &val, sizeof val);
-  zmq_setsockopt(caps, ZMQ_SNDHWM, &val, sizeof val);
-  zmq_setsockopt(caps, ZMQ_RCVHWM, &val, sizeof val);
-#endif
 
   RC(zmq_bind(xsub, "tcp://*:7770")); /* publishers connect here */
   RC(zmq_bind(xpub, "tcp://*:7771")); /* subscribers connect here */
@@ -92,8 +82,6 @@ int main(int argc, char* argv[])
 }
 
 
-
-#if 1
 struct evt {
   uint16_t id;
   uint32_t value;
@@ -150,6 +138,5 @@ void *rep_socket_monitor (void *ctx) {
   zmq_close (s);
   return NULL;
 }
-#endif
 
 
