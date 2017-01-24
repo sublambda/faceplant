@@ -1,10 +1,23 @@
+usage:
 
-rcvface <facehost> [<proxy>]
+rcvface <facehost> [<relay>]
   facehost: name/addr of face detector
-  proxy: proxy addr [optional]
+  relay: relay addr [optional]
 
 face [<dev>] [<relay>]
   dev: video device number [0-3]; default 0
   relay: optional relay host
 
-alternatively, face can get relay address from FACERELAY environmenet variable
+(alternatively, face can get relay address from FACERELAY environmenet variable)
+
+zproxy can be used as a relay if direct connection between detector and receiver is unavailable
+
+
+dependencies:
+OpenCV 3.2  http://opencv.org/downloads.html
+
+Zeromq 4.2  http://zeromq.org
+
+on OSX:
+ brew tap homebrew/science; brew install opencv3 zeromq
+
